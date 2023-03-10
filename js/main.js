@@ -108,7 +108,7 @@ Vue.component('product', {
                 return this.brand + ' ' + this.product;
             }
         },
-        inStock(){
+        inStock() {
             return this.variants[this.selectedVariant].variantQuantity
         },
         image() {
@@ -124,18 +124,104 @@ Vue.component('product', {
     }
 })
 
+
+Vue.component('product-review', {
+    template: `
+   <form class="review-form" @submit.prevent="onSubmit">
+   <p v-if="errors.length">
+ <b>Please correct the following error(s):</b>
+ <ul>
+   <li v-for="error in errors">{{ error }}</li>
+ </ul>
+</p>
+ <p>
+   <label for="name">Name:</label>
+   <input id="name" v-model="name" placeholder="name">
+ </p>
+
+ <p>
+   <label for="review">Review:</label>
+   <textarea id="review" v-model="review"></textarea>
+ </p>
+ 
+ <p>«Would you recommend this product?».</p>
+ <div class="p">
+    <label for="positive">Yes</label>    
+       <input v-model="answer" type="radio" id="positive" name="answer" value="positive">
+       <label for="positive">No</label>
+       <input v-model="answer" type="radio" id="negative" name="answer" value="negative">
+   <br>
+</div>
+
+ <p>
+   <label for="rating">Rating:</label>
+   <select id="rating" v-model.number="rating">
+     <option>5</option>
+     <option>4</option>
+     <option>3</option>
+     <option>2</option>
+     <option>1</option>
+   </select>
+ </p>
+
+ <p>
+   <input type="submit" value="Submit"> 
+ </p>
+
+</form>
+ `,
+    data() {
+        return {
+            name: null,
+            review: null,
+            rating: null,
+            answer: null,
+            errors: []
+        }
+    },
+
+    methods: {
+        onSubmit() {
+            if (this.name && this.review && this.rating) {
+                let productReview = {
+                    name: this.name,
+                    review: this.review,
+                    rating: this.rating,
+                    answer: this.answer
+
+                }
+                this.$emit('review-submitted', productReview)
+                this.name = null
+                this.review = null
+                this.rating = null
+                this.answer = null
+            } else {
+                if (!this.name) this.errors.push("Name required.")
+                if (!this.review) this.errors.push("Review required.")
+                if (!this.rating) this.errors.push("Rating required.")
+                if (!this.answer) this.errors.push("You would recommend or not?!")
+            }
+        }
+    }
+})
+
+
 let app = new Vue({
     el: '#app',
     data: {
         premium: true,
-        cart: []
+        cart: [],
+        reviews: []
     },
     methods: {
         updateCart(id) {
             this.cart.push(id);
         },
-        DownCart (id) {
+        DownCart(id) {
             this.cart.push(id);
+        },
+        addReview(productReview) {
+            this.reviews.push(productReview)
         }
     }
 })
