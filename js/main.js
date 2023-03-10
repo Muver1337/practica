@@ -1,3 +1,10 @@
+let eventBus = new Vue()
+
+
+
+
+
+
 Vue.component('product-details', {
     props: {
         details: {
@@ -119,7 +126,12 @@ Vue.component('product', {
             } else {
                 return 2.99
             }
-        }
+        },
+    },
+    mounted() {
+        eventBus.$on('review-submitted', productReview => {
+            this.reviews.push(productReview)
+        })
     }
 })
 
@@ -134,7 +146,7 @@ Vue.component('product-tabs', {
       <div>
       
         <div>
-          <span class="tabs" 
+          <span class="tab" 
                 :class="{ activeTab: selectedTab === tab }"
                 v-for="(tab, index) in tabs"
                 :key="index"
@@ -232,7 +244,7 @@ Vue.component('product-review', {
                     answer: this.answer
 
                 }
-                this.$emit('review-submitted', productReview)
+                eventBus.$emit('review-submitted', productReview)
                 this.name = null
                 this.review = null
                 this.rating = null
@@ -262,8 +274,5 @@ let app = new Vue({
         DownCart(id) {
             this.cart.push(id);
         },
-        addReview(productReview) {
-            this.reviews.push(productReview)
-        }
     }
 })
