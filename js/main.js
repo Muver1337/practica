@@ -20,45 +20,43 @@ Vue.component('product', {
         }
     },
     template: `
-   <div class="product">
-   
+     <div class="product">
+          
         <div class="product-image">
-            <img :src="image" :alt="altText" />
+          <img :src="image" />
         </div>
-        
+  
         <div class="product-info">
-            <h1>{{ title }}</h1>
-            <p>{{ description }}</p>
-            <a v-bind:href="link">More products like this</a>
-            <p v-if="inStock">In stock</p>
-            <p v-else style="text-decoration: line-through">Out of stock</p>
-            <product-details :details="details"></product-details>
-            <span v-show="onSale">On Sale</span>
+            <h1>{{ product }}</h1>
+            <p v-if="inStock">In Stock</p>
+            <p v-else>Out of Stock</p>
             <p>Shipping: {{ shipping }}</p>
-            <div
-                    class="color-box"
-                    v-for="(variant, index) in variants"
-                    :key="variant.variantId"
-                    :style="{ backgroundColor:variant.variantColor }"
-                    @mouseover="updateProduct(index)"
-            ></div>
+  
             <ul>
-                <li v-for="size in sizes">{{ size }}</li>
+              <li v-for="detail in details">{{ detail }}</li>
             </ul>
-<!--            <div class="cart">-->
-<!--                <p>Cart({{ cart }})</p>-->
-<!--            </div>-->
-            <button
-                    v-on:click="addToCart"
-                    :disabled="!inStock"
-                    :class="{ disabledButton: !inStock }"
-            >
-                Add to cart
+  
+            <div class="color-box"
+                 v-for="(variant, index) in variants" 
+                 :key="variant.variantId"
+                 :style="{ backgroundColor: variant.variantColor }"
+                 @mouseover="updateProduct(index)"
+                 >
+            </div> 
+  
+            <button v-on:click="addToCart" 
+              :disabled="!inStock"
+              :class="{ disabledButton: !inStock }"
+              >
+            Add to cart
             </button>
-            <button v-on:click="remToCart">Rem to cart</button>
-        </div>
-    </div>
- `,
+  
+         </div> 
+
+         <product-tabs :reviews="reviews"></product-tabs>
+      
+      </div>
+     `,
     data() {
         return {
             product: "Socks",
@@ -86,6 +84,7 @@ Vue.component('product', {
 
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
             cart: 0,
+            reviews:[]
         }
     },
     methods: {
@@ -120,6 +119,49 @@ Vue.component('product', {
             } else {
                 return 2.99
             }
+        }
+    }
+})
+
+Vue.component('product-tabs', {
+    props: {
+        reviews: {
+            type: Array,
+            required: false
+        }
+    },
+    template: `
+      <div>
+      
+        <div>
+          <span class="tabs" 
+                :class="{ activeTab: selectedTab === tab }"
+                v-for="(tab, index) in tabs"
+                :key="index"
+                @click="selectedTab = tab"
+          >{{ tab }}</span>
+        </div>
+
+        <div v-show="selectedTab === 'Reviews'">
+            <p v-if="!reviews.length">There are no reviews yet.</p>
+            <ul v-else>
+                <li v-for="review in reviews">
+                  <p>{{ review.name }}</p>
+                  <p>Rating:{{ review.rating }}</p>
+                  <p>{{ review.review }}</p>
+                </li>
+            </ul>
+        </div>
+
+        <div v-show="selectedTab === 'Make a Review'">
+          <product-review></product-review>
+        </div>
+    </div>
+    `,
+    data() {
+        return {
+            tabs: ['Reviews', 'Make a Review'],
+            selectedTab: 'Reviews'  // устанавливается с помощью @click
         }
     }
 })
