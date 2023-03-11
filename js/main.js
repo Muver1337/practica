@@ -1,10 +1,5 @@
 let eventBus = new Vue()
 
-
-
-
-
-
 Vue.component('product-details', {
     props: {
         details: {
@@ -18,6 +13,9 @@ Vue.component('product-details', {
     </ul>
   `
 })
+
+
+
 
 Vue.component('product', {
     props: {
@@ -34,9 +32,12 @@ Vue.component('product', {
         </div>
   
         <div class="product-info">
-            <h1>{{ product }}</h1>
+            <h1>{{ title }}</h1>
+            <p>{{ description }}</p>
+            <a v-bind:href="link">More products like this</a>
             <p v-if="inStock">In Stock</p>
             <p v-else>Out of Stock</p>
+            <span v-show="onSale">On Sale</span>
             <p>Shipping: {{ shipping }}</p>
   
             <ul>
@@ -49,13 +50,22 @@ Vue.component('product', {
                  :style="{ backgroundColor: variant.variantColor }"
                  @mouseover="updateProduct(index)"
                  >
-            </div> 
+            </div>
+            
+            <ul>
+                <li v-for="size in sizes">{{ size }}</li>
+            </ul> 
   
             <button v-on:click="addToCart" 
               :disabled="!inStock"
               :class="{ disabledButton: !inStock }"
               >
             Add to cart
+            </button>
+            <button v-on:click="remToCart" 
+              :disabled="!inStock"
+              :class="{ disabledButton: !inStock }"
+              >Rem to Cart
             </button>
   
          </div> 
@@ -135,6 +145,11 @@ Vue.component('product', {
     }
 })
 
+
+
+
+
+
 Vue.component('product-tabs', {
     props: {
         reviews: {
@@ -167,7 +182,7 @@ Vue.component('product-tabs', {
 
         <div v-show="selectedTab === 'Make a Review'">
           <product-review></product-review>
-        </div>
+        </div>        
     </div>
     `,
     data() {
@@ -177,6 +192,9 @@ Vue.component('product-tabs', {
         }
     }
 })
+
+
+
 
 
 Vue.component('product-review', {
@@ -260,6 +278,9 @@ Vue.component('product-review', {
 })
 
 
+
+
+
 let app = new Vue({
     el: '#app',
     data: {
@@ -271,8 +292,33 @@ let app = new Vue({
         updateCart(id) {
             this.cart.push(id);
         },
-        DownCart(id) {
-            this.cart.push(id);
+        remToCart(id) {
+            this.cart.pop(id);
+        },
+    }
+})
+
+
+
+Vue.component('shipping', {
+    props: {
+        details: {
+            type: Array,
+            required: true
+        }
+    },
+    template: `
+    <ul>
+      <li v-for="detail in details">{{ detail }}</li>
+    </ul>
+  `,
+    computed: {
+        shipping() {
+            if (this.premium) {
+                return "Free";
+            } else {
+                return 2.99
+            }
         },
     }
 })
