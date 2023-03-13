@@ -4,7 +4,6 @@ Vue.component('product-details', {
     props: {
         details: {
             type: Array,
-            required: true
         }
     },
     template: `
@@ -40,9 +39,7 @@ Vue.component('product', {
             <span v-show="onSale">On Sale</span>
             <p>Shipping: {{ shipping }}</p>
   
-            <ul>
-              <li v-for="detail in details">{{ detail }}</li>
-            </ul>
+            <product-details></product-details>
   
             <div class="color-box"
                  v-for="(variant, index) in variants" 
@@ -173,9 +170,10 @@ Vue.component('product-tabs', {
             <p v-if="!reviews.length">There are no reviews yet.</p>
             <ul v-else>
                 <li v-for="review in reviews">
-                  <p>{{ review.name }}</p>
-                  <p>Rating:{{ review.rating }}</p>
-                  <p>{{ review.review }}</p>
+                  <p>Name: {{ review.name }}</p>
+                  <p>Rating: {{ review.rating }}</p>
+                  <p>Answer: {{ review.answer }}</p>
+                  <p>Review: {{ review.review }}</p>
                 </li>
             </ul>
         </div>
@@ -206,9 +204,10 @@ Vue.component('product-review', {
    <li v-for="error in errors">{{ error }}</li>
  </ul>
 </p>
+<legend>Отзыв</legend>
  <p>
    <label for="name">Name:</label>
-   <input id="name" v-model="name" placeholder="name">
+   <input id="name" v-model="name" placeholder="Name">
  </p>
 
  <p>
@@ -219,9 +218,9 @@ Vue.component('product-review', {
  <p>«Would you recommend this product?».</p>
  <div class="p">
     <label for="positive">Yes</label>    
-       <input v-model="answer" type="radio" id="positive" name="answer" value="positive">
+       <input v-model="answer" type="radio" id="positive" name="answer" value="Да">
        <label for="positive">No</label>
-       <input v-model="answer" type="radio" id="negative" name="answer" value="negative">
+       <input v-model="answer" type="radio" id="negative" name="answer" value="Нет">
    <br>
 </div>
 
@@ -237,7 +236,7 @@ Vue.component('product-review', {
  </p>
 
  <p>
-   <input type="submit" value="Submit"> 
+   <input type="submit" value="Submit" v-on:click="removeMass"> 
  </p>
 
 </form>
@@ -273,9 +272,32 @@ Vue.component('product-review', {
                 if (!this.rating) this.errors.push("Rating required.")
                 if (!this.answer) this.errors.push("You would recommend or not?!")
             }
+        },
+        removeMass() {
+            this.errors.length = 0
         }
     }
 })
+
+// Vue.component('redColor', {
+//     props: {
+//         details: {
+//             type: Array,
+//             required: true
+//         }
+//     },
+//     template: `
+//      <li v-for="review in reviews">
+//         <p>Name: {{ review.name }}</p>
+//         <p>Rating: {{ review.rating }}</p>
+//         <p>Answer: {{ review.answer }}</p>
+//         <p>Review: {{ review.review }}</p>
+//      </li>
+//   `,
+//     computed: {
+//
+//     }
+// })
 
 
 
@@ -294,31 +316,6 @@ let app = new Vue({
         },
         remToCart(id) {
             this.cart.pop(id);
-        },
-    }
-})
-
-
-
-Vue.component('shipping', {
-    props: {
-        details: {
-            type: Array,
-            required: true
-        }
-    },
-    template: `
-    <ul>
-      <li v-for="detail in details">{{ detail }}</li>
-    </ul>
-  `,
-    computed: {
-        shipping() {
-            if (this.premium) {
-                return "Free";
-            } else {
-                return 2.99
-            }
         },
     }
 })
